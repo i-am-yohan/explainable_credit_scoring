@@ -1,7 +1,9 @@
+#3_1.1 install all packages not yet installed
 list.of.packages <- c('scorecard','DBI','RPostgres','ROCR','performanceEstimation','ggplot2','glmnet','caret')
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
+#
 library('scorecard')
 library('DBI')
 library('RPostgres')
