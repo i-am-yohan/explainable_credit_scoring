@@ -23,13 +23,13 @@ The following inputs to the counterfactual search alogorithm are as follows:
 
 The script is executed as follows:
 ```
-python3 Scripts/05_Extract_CF.py <postgres id> <postgres password> <sk_id_curr> <target_score> <n_samples>
+python3 Scripts/05_Extract_CF.py <postgres id> <postgres password> <sk_id_curr> <target_score> <lower_bound> <upper_bound> <n_samples>
 ```
 This loads a table to the postgresDB called `plot_table`. This contains the counterfactual information.
 
 ## Step 4: Visualize the counterfactuals
 The `06_Visualization.py` script uses the `plot_table` to create graphs to help visualize the project. It is executed as follows:
 ```
-python3 Scripts/06_Visualization.py <postgres id> <postgres password>
+python3 Scripts/06_Visualization.py <postgres id> <postgres password> <Counterfactual ID>
 ```
 These are output as plotly graphs sent to the web browser.
