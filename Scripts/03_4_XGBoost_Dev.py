@@ -52,6 +52,13 @@ if __name__ == '__main__':
 
 
     def Evaluation(Y_True, Y_Predict, Y_Predict_prob):
+        '''
+        Creates a dictionary with the performance metrics
+        :param Y_True: The actual predictions in the test test
+        :param Y_Predict: The model predictions
+        :param Y_Predict_prob: The model prediction probabilities
+        :return: the output dictionary with the performance metrics
+        '''
         Output = {}
         Output['Accuracy'] = sklearn.metrics.accuracy_score(Y_True, Y_Predict)
         Output['Precision'] = sklearn.metrics.precision_score(Y_True, Y_Predict)

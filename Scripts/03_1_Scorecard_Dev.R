@@ -1,9 +1,9 @@
-#3_1.1 install all packages not yet installed
+#03_1.1 Install packages required
 list.of.packages <- c('scorecard','DBI','RPostgres','ROCR','performanceEstimation','ggplot2','glmnet','caret')
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
-#
+#03_1.2 Load required packages
 library('scorecard')
 library('DBI')
 library('RPostgres')
@@ -13,11 +13,12 @@ library('ggplot2')
 library('glmnet')
 library('caret')
 
+#03_1.3 Parse the arguments
 args <- commandArgs(trailingOnly = TRUE)
 usr = as.character(args[1])
 pwd = as.character(args[2])
 
-
+#03_1.4 Connect to the DB
 db <- 'hm_crdt'  #provide the name of your db
 host_db <- 'localhost' #i.e. # i.e. 'ec2-54-83-201-96.compute-1.amazonaws.com'  
 db_port <- '5432'  # or any other port specified by the DBA
@@ -27,6 +28,8 @@ con <- dbConnect(RPostgres::Postgres(), dbname = db, host=host_db, port=db_port,
 
 print('Creating credit scorecard model')
 #extract Data
+
+#03_1.5 Extract the tables from the DB
 extract_tbl <- function(table_name){
   out_tbl <- dbGetQuery(con, sprintf("select * from %s",table_name))
   row.names(out_tbl) <- out_tbl$sk_id_curr
@@ -36,19 +39,22 @@ ABT_Train <- extract_tbl('abt.abt_train')
 ABT_Test <- extract_tbl('abt.abt_test')
 ABT_Kagl <- extract_tbl('abt.abt_kaggle_submission')
 
+#Remove this feature because it is worthless
 ABT_Train[['amt_annuity_bur_ratio']] <- NULL
 ABT_Test[['amt_annuity_bur_ratio']] <- NULL
 ABT_Kagl[['amt_annuity_bur_ratio']] <- NULL
 
+#03_1.6 Change to factor
 ABT_Train[,'target'] <- as.factor(ABT_Train[,'target'])
 ABT_Test[,'target'] <- as.factor(ABT_Test[,'target'])
 ABT_Kagl[,'target'] <- as.factor(ABT_Kagl[,'target'])
 
 
+#03_1.7 Apply automatic binning 
 WOE_Bin <- woebin(ABT_Train, 'target')
 
 
-#Drop Shit IVs
+#03_1.8 Remove poor IVs <5%
 IV_List <- c(NA)
 Col_List <- c('target')
 for (col in names(ABT_Train)[(!names(ABT_Train) %in% 'target')]){
@@ -58,22 +64,24 @@ for (col in names(ABT_Train)[(!names(ABT_Train) %in% 'target')]){
   }
 }
 
-
 IV_DF <- cbind(data.frame(Col_List), data.frame(IV_List))
 IV_DF[,'Col_List'] <- paste(IV_DF[,'Col_List'], '_woe', sep = '')
 colnames(IV_DF) <- c('feature','IV')
 
+
+#03_1.9 Subset the data removing the poor IVs
 ABT_Train <- ABT_Train[,Col_List]
 ABT_Test <- ABT_Test[,Col_List]
 ABT_Kagl <- ABT_Kagl[,Col_List]
 
+
+#03_1.10 Apply WoE calculations
 ABT_Kagl_WOE <- data.frame(woebin_ply(ABT_Kagl, bins=WOE_Bin))
 ABT_Train_WOE <- data.frame(woebin_ply(ABT_Train, bins=WOE_Bin))
 ABT_Test_WOE <- data.frame(woebin_ply(ABT_Test, bins=WOE_Bin))
 
 
-
-#Columns to drop
+#03_1.11 Columns to drop
 Drop_Col <- c(#Dropped due to multicollinearity
               'ext_source_2_woe'
               ,'ext_source_3_woe'
@@ -115,6 +123,8 @@ Drop_Col <- c(#Dropped due to multicollinearity
 ABT_Train_WOE_sub <- ABT_Train_WOE
 ABT_Train_WOE_sub[Drop_Col] <- NULL
 
+
+#03_1.12 calculate the weight vectors to deal with class imbalance
 ABT_Train_WOE_sub[ABT_Train_WOE_sub['target'] == 0 ,'weight_vec'] <- nrow(ABT_Train_WOE_sub)/(2*nrow(ABT_Train_WOE_sub[ABT_Train_WOE_sub['target'] == 0,]))
 ABT_Train_WOE_sub[ABT_Train_WOE_sub['target'] == 1 ,'weight_vec'] <- nrow(ABT_Train_WOE_sub)/(2*nrow(ABT_Train_WOE_sub[ABT_Train_WOE_sub['target'] == 1,]))
 
@@ -122,10 +132,12 @@ ABT_Test_WOE[ABT_Test_WOE['target'] == 0 ,'weight_vec'] <- nrow(ABT_Train_WOE_su
 ABT_Test_WOE[ABT_Test_WOE['target'] == 1 ,'weight_vec'] <- nrow(ABT_Train_WOE_sub)/(2*nrow(ABT_Train_WOE_sub[ABT_Train_WOE_sub['target'] == 1,]))
 
 
-#Train the model
+#03_1.13 Train the model
 LR_Model <- glm(target ~ . -weight_vec , weights=weight_vec, data=ABT_Train_WOE_sub, family=binomial())
 summary(LR_Model)
 
+
+#03_1.14 A Function to calculate the performance metrics
 Test_SC <- function(In_Model , In_Data , Prob = 0.5){
   
   #The confusion matrix Prob is the decision boundary
@@ -154,7 +166,8 @@ Test_SC <- function(In_Model , In_Data , Prob = 0.5){
   return(Output)
 }
 
-#Cross-Validation
+
+##03_1.15 K-fold Cross-Validation
 folds <- createFolds(ABT_Train_WOE_sub$target, k = 5)
 for (i in 1:5){
   #print(folds[i])
@@ -179,6 +192,8 @@ Test_SC(LR_Model , ABT_Test_WOE , 0.5)
 Kagl_sub <- ABT_Kagl_WOE
 ABT_Kagl_WOE['weight_vec'] <- 0
 
+
+#03_1.16 create csv for Kaggle submission
 Kagl_sub['target'] <- predict(LR_Model, newdata = ABT_Kagl_WOE, type = "response")
 Kagl_sub['sk_id_curr'] <- row.names(ABT_Kagl)
 Kagl_sub <- Kagl_sub[c('target','sk_id_curr')]

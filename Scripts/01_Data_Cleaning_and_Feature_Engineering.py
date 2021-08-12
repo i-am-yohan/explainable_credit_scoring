@@ -8,9 +8,8 @@ from sklearn.neighbors import KNeighborsClassifier
 
 if __name__ == '__main__':
 
-    #1.1 The arguments
     parser = argparse.ArgumentParser(
-        description = 'The Data Cleaning and feature engineering phase'
+        description = 'The Main NLP process'
     )
 
     parser.add_argument(
@@ -27,21 +26,18 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    #1.2 Connect to postgres DB
+    #Connect to DB
     conn = psycopg2.connect(
         "dbname='hm_crdt' user='{}' password='{}'".format(args.db_user, args.in_password) #args.db_user
     )
     conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     cur = conn.cursor()
 
-    #1.3 Create SQLalchemy engine
     engine = create_engine('postgresql://postgres:{}@localhost:5432/hm_crdt'.format(args.in_password)) #args.db_user,
 
-    #1.4 Test the connection
     conn_test = engine.connect()
     conn_test.close()
 
-    #1.4 Create Schema for all test tables
     cur.execute("""create schema if not exists misc;""")
 
 
@@ -54,14 +50,14 @@ if __name__ == '__main__':
 
     amt_corr_df.corr()
 
-    #1.5 A function to convert regression to string for imputation
+    #A function to convert regression to string for imputation
     def reg_2_str(In_Reg):
         reg_str = amt_annuity_reg.params.reset_index().values.tolist()
         reg_str = ['*'.join(map(str,item)) for item in reg_str]
         reg_str = '+'.join(reg_str).replace('Intercept*','')
         return(reg_str)
 
-    #1.6 amt_annuity imputation
+    #amt_annuity imputation
     amt_annuity_reg_df = pd.read_sql('''select 
                       amt_annuity
                     , amt_credit
@@ -72,13 +68,12 @@ if __name__ == '__main__':
                         and amt_income_total is not null
                     ;''', conn)
 
-    #1.6.1 train an OLS regression for imputation
     amt_annuity_reg = smf.ols('amt_annuity ~ amt_credit + amt_income_total', data=amt_annuity_reg_df).fit()
-    #print(amt_annuity_reg.summary()) 
+    print(amt_annuity_reg.summary())
     amt_annuity_reg_str = reg_2_str(amt_annuity_reg)
 
 
-    #1.7 amt_goods_price imputation
+    #amt_goods_price imputation
     amt_goods_price_reg_df = pd.read_sql('''select 
                       amt_credit
                     , amt_goods_price
@@ -87,18 +82,35 @@ if __name__ == '__main__':
                         and amt_credit is not null
                     ;''', conn)
 
-    #1.7.1 train an OLS regression for imputation
     amt_goods_price_reg = smf.ols('amt_goods_price ~ amt_goods_price', data=amt_goods_price_reg_df).fit()
-    #print(amt_goods_price_reg.summary())
+    print(amt_goods_price_reg.summary())
     amt_goods_price_reg_str = reg_2_str(amt_goods_price_reg)
 
 
-    #1.8 EXT_SOURCE Imputation
-    #1.8.1 Extract train and test for imputation
+    #EXT_SOURCE Imputation
     application_train = pd.read_sql('''select * from raw_in.application_train_test where train_test = 'Train';''', conn)
     application_test = pd.read_sql('''select * from raw_in.application_train_test where train_test = 'Test';''', conn)
 
-    #1.8.2 Fill NAs with mean
+    #columns_for_modelling = list(set(application_test.dtypes[application_test.dtypes != 'object'].index.tolist())
+    #                 - set(['ext_source_1','ext_source_2','ext_source_3','sk_id_curr']))
+
+    #following code lifted from https://medium.com/thecyphy/home-credit-default-risk-part-2-84b58c1ab9d5
+    #for ext_col in ['ext_source_2','ext_source_3','ext_source_1']:
+        #X_model - datapoints which do not have missing values of given column
+        #Y_train - values of column trying to predict with non missing values
+        #X_train_missing - datapoints in application_train with missing values
+        #X_test_missing - datapoints in application_test with missing values
+    #    X_model, X_train_missing, X_test_missing, Y_train = application_train[~application_train[ext_col].isna()][columns_for_modelling], application_train[
+    #                                                    application_train[ext_col].isna()][columns_for_modelling], application_test[
+    #                                                    application_test[ext_col].isna()][columns_for_modelling], application_train[
+    #                                                    ext_col][~application_train[ext_col].isna()]
+    #    xg = XGBRegressor(n_estimators = 1000, max_depth = 3, learning_rate = 0.1, n_jobs = -1, random_state = 59)
+    #    xg.fit(X_model, Y_train)
+    #    application_train[ext_col][application_train[ext_col].isna()] = xg.predict(X_train_missing)
+    #    application_test[ext_col][application_test[ext_col].isna()] = xg.predict(X_test_missing)
+        #adding the predicted column to columns for modelling for next column's prediction
+    #    columns_for_modelling = columns_for_modelling + [ext_col]
+
     application_train['ext_source_1'] = application_train['ext_source_1'].fillna(application_train['ext_source_1'].mean())
     application_train['ext_source_2'] = application_train['ext_source_2'].fillna(application_train['ext_source_2'].mean())
     application_train['ext_source_3'] = application_train['ext_source_3'].fillna(application_train['ext_source_3'].mean())
@@ -106,14 +118,13 @@ if __name__ == '__main__':
     application_test['ext_source_1'] = application_test['ext_source_1'].fillna(application_train['ext_source_1'].mean())
     application_test['ext_source_2'] = application_test['ext_source_2'].fillna(application_train['ext_source_2'].mean())
     application_test['ext_source_3'] = application_test['ext_source_3'].fillna(application_train['ext_source_3'].mean())
-    
-    
-    #1.9  target_neighbors_500_mean feature creation. Lifted from Kaggle winning submission
-    #1.9.1 Temporarily engineer CREDIT_ANNUITY_RATIO for imputation
+
+
+    #Transpose
     application_train['CREDIT_ANNUITY_RATIO'] = application_train['amt_credit']/application_train['amt_annuity']
     application_test['CREDIT_ANNUITY_RATIO'] = application_test['amt_credit']/application_test['amt_annuity']
 
-    #1.9.2 Code lifted from https://medium.com/thecyphy/home-credit-default-risk-part-2-84b58c1ab9d5
+
     def neighbors_EXT_SOURCE_feature():
         '''
         Function to generate a feature which contains the means of TARGET of 500 neighbors of a particular row.
@@ -138,18 +149,17 @@ if __name__ == '__main__':
         application_train['target_neighbors_500_mean'] = [application_train['target'].iloc[ele].mean() for ele in train_500_neighbors]
         application_test['target_neighbors_500_mean'] = [application_train['target'].iloc[ele].mean() for ele in test_500_neighbors]
 
-    neighbors_EXT_SOURCE_feature() 
-    
-    #1.9.3 create temporary table for data warehouse
+    neighbors_EXT_SOURCE_feature()
+
+
+
     EXT_DF = application_train[['ext_source_1','ext_source_2','ext_source_3','target_neighbors_500_mean','sk_id_curr']].append(application_test[['ext_source_1','ext_source_2','ext_source_3','target_neighbors_500_mean','sk_id_curr']])
 
-    #1.9.4 Push to DW and add primary key
     EXT_DF.to_sql('ext_source_impute', engine, schema='misc', if_exists='replace')
     cur.execute("""alter table misc.EXT_Source_Impute add primary key (sk_id_curr);""")
 
 
     print('Creating ABT')
-    #1.9.5 The full feature engineering query
     cur.execute(
         """
         create schema if not exists ABT;

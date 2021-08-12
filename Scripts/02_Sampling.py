@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     #2.5 Train and test creation
     Full_DF_kagl = Full_DF[pd.isna(Full_DF['target'])] #These are cases from the kaggle test test, they have no target labels
-    Train_Test = Full_DF[~pd.isna(Full_DF['target'])] 
+    Train_Test = Full_DF[~pd.isna(Full_DF['target'])]
     Train_Test['target'] = Train_Test['target'].astype(int).copy()
 
     #2.5.1 The train and test split
