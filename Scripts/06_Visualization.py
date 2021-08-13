@@ -7,6 +7,7 @@ import plotly.io as pio
 import argparse
 from sqlalchemy import create_engine
 
+#this does all the counterfactual visualization!
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
