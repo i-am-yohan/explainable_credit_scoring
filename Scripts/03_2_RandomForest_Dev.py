@@ -59,7 +59,7 @@ if __name__ == '__main__':
         return(Output)
 
 
-    #Remove correlated varaiables
+    #03_2.5 Remove correlated varaiables
     threshold = 0.85
 
     # Absolute value correlation matrix
@@ -73,17 +73,16 @@ if __name__ == '__main__':
     X_test = X_test.drop(to_drop, axis = 1)
     Sub_Df = Sub_Df.drop(to_drop, axis = 1)
 
-    #Feature Scaling
+    #03_2.6 Apply Feature Scaling
     Colnames = X.columns
     scaler = StandardScaler()
     X = pd.DataFrame(scaler.fit_transform(X) , columns=Colnames)
     X_test = pd.DataFrame(scaler.transform(X_test) , columns=Colnames)
     Sub_Df = pd.DataFrame(scaler.transform(Sub_Df) , columns=Colnames, index=Sub_Df.index)
 
-
     Feature_set_iter = X.columns
 
-
+    #03_2.7 Create the parameters for the random forest model    
     sel_params = {
             'n_estimators': 200,
             'class_weight':'balanced',
@@ -94,13 +93,15 @@ if __name__ == '__main__':
             'n_jobs':-2
             }
 
+    #03_2.8 Extract validation set
     y_train_sel, y_CV_sel, X_train_sel, X_CV_sel = train_test_split(y, X, test_size=0.2, random_state=198666, stratify = y)
 
+    #03_2.9 Train the model
     RF_sel = sklearn.ensemble.RandomForestClassifier(**sel_params)
     model_sel = RF_sel.fit(X_train_sel, y_train_sel)
 
 
-
+    #03_2.10 create predictions and evaluate
     y_sel_train_Predict = model_sel.predict(X_train_sel)
     y_sel_train_Predict_prob = model_sel.predict_proba(X_train_sel)[:,1]
     y_sel_CV_Predict = model_sel.predict(X_CV_sel)
@@ -109,35 +110,34 @@ if __name__ == '__main__':
     print(Evaluation(y_CV_sel, y_sel_CV_Predict, y_sel_CV_Predict_prob))
 
 
-    #Feature selection
+    #03_2.11 Feature selection
     feature_imp = model_sel.feature_importances_
     feature_imp_df = pd.DataFrame({'feature':Feature_set_iter, 'importances':feature_imp})
 
+    Feature_sel = feature_imp_df['feature'][feature_imp_df['importances'] > np.percentile(feature_imp_df['importances'],90)] #Take the top 90th percentile
 
-
-    Feature_sel = feature_imp_df['feature'][feature_imp_df['importances'] > np.percentile(feature_imp_df['importances'],90)]
-
+    #03_2.12 Subset the feature sets
     X = X[Feature_sel]
     X_test = X_test[Feature_sel]
     Sub_Df = Sub_Df[Feature_sel]
 
-
+    #03_2.13 Extract validation set again??
     y_train, y_CV, X_train, X_CV = train_test_split(y, X, test_size=0.2, random_state=198666, stratify = y)
-
     params = sel_params.copy()
-    params['n_estimators'] = 300
+    params['n_estimators'] = 300 #increase number of params
+
+    #03_2.14 Train new model and Evaluate
     RF = sklearn.ensemble.RandomForestClassifier(**params)
     Model = RF.fit(X_train, y_train)
-
     y_train_pred = Model.predict(X_train)
     y_CV_pred = Model.predict(X_CV)
     y_train_pred_prob = Model.predict_proba(X_train)[:,1]
     y_CV_pred_prob = Model.predict_proba(X_CV)[:,1]
-
     print(Evaluation(y_train, y_train_pred, y_train_pred_prob))
     print(Evaluation(y_CV, y_CV_pred, y_CV_pred_prob))
 
 
+    #03_2.15 Do K-fold cross-validation
     kf = KFold(n_splits=5, shuffle=True, random_state=198667)
 
     CV_params = params.copy()
@@ -145,9 +145,9 @@ if __name__ == '__main__':
 
     for fold, (train_index, CV_index) in enumerate(kf.split(X), 1):
         X_train_kf = X.iloc[train_index]
-        y_train_kf = y.iloc[train_index]  # Based on your code, you might need a ravel call here, but I would look into how you're generating your y
+        y_train_kf = y.iloc[train_index]
         X_CV_kf = X.iloc[CV_index]
-        y_CV_kf = y.iloc[CV_index]  # See comment on ravel and  y_train
+        y_CV_kf = y.iloc[CV_index]
 
         model_kf = sklearn.ensemble.RandomForestClassifier(**CV_params)
         model_kf.fit(X_train_kf, y_train_kf)
@@ -168,7 +168,7 @@ if __name__ == '__main__':
     print('Evaluation for test set')
     print(Evaluation(y_test,y_test_pred,y_test_pred_prob))
 
-    #Kaggle Submission
+    #03_2.16 Kaggle Submission
     Kagl_Sub = Sub_Df.copy()
     Kagl_Sub['TARGET'] = 0.5
     Kagl_Sub['TARGET'] = Model.predict_proba(Sub_Df)[:,1]
