@@ -31,22 +31,24 @@ if __name__ == '__main__':
         help='The password for the user'
     )
 
+    #04.1 Parse the arguments
     args = parser.parse_args()
 
+    #04.2 Connect to the SQLalchemy
     engine = create_engine('postgresql://postgres:{}@localhost:5432/hm_crdt'.format(args.in_password))
 
-    #Load Data
+    #04.3 Extract Data
     Train_DF = pd.read_sql('''select * from abt.abt_train''', engine)#.sample(frac=1,random_state=198667)
     Test_Df = pd.read_sql('''select * from abt.abt_test''', engine)
     Sub_Df = pd.read_sql('''select * from abt.abt_kaggle_submission''', engine)
 
-    #Load Model
+    #04.4 Load Model - XGBoost, top performing
     out_file = r'Final_Model_XGBoost.pkl'
     Model = pickle.load(open(out_file, "rb"))
 
     Features = Model.get_booster().feature_names
 
-    #Data Prep
+    #04.5 Data Prep
     y = Train_DF[['target','sk_id_curr']]
     X = Train_DF.drop('target', axis = 1)
     X = X.set_index('sk_id_curr')
@@ -66,14 +68,14 @@ if __name__ == '__main__':
     y_sub = y_sub.set_index('sk_id_curr')
 
 
-    #Normalization
+    #04.6 Normalization
     scaler = StandardScaler()
     X = pd.DataFrame(scaler.fit_transform(X) , columns=Features, index=X.index)
     X_test = pd.DataFrame(scaler.transform(X_test) , columns=Features, index=X_test.index)
     X_sub = pd.DataFrame(scaler.transform(X_sub) , columns=Features, index=X_sub.index)
 
 
-    #Add Predictions and scores
+    #04.7 Add Predictions and scores
     y['pd'] = Model.predict_proba(X)[:,1]
     y_test['pd'] = Model.predict_proba(X_test)[:,1]
     y_sub['pd'] = Model.predict_proba(X_sub)[:,1]
@@ -82,8 +84,16 @@ if __name__ == '__main__':
     y_sub['predicted_default'] = Model.predict(X_sub)
 
 
-    #
+    #04.8 A function to convert probability to score
     def PD_2_Score(In_PD, Target_Score, PDO, T_Odds):
+        '''
+        converts a probability prediction to a score
+        :param In_PD: The input Probability (of default) (float)
+        :param Target_Score: The target score
+        :param PDO: The points to double the odds
+        :param T_Odds: The target odds
+        :return: The output score (float)
+        '''
         Odds = In_PD/(1-In_PD)
         factor = PDO/np.log(2)
         offset = Target_Score - factor*np.log(T_Odds)
@@ -98,13 +108,13 @@ if __name__ == '__main__':
     y_sub['score'] = y_sub['pd'].apply(PD_Score_Trans)
 
 
-    #push to data warehouse
+    #04.9 push to data warehouse
     y.to_sql('y_expl_train', engine, schema='misc', if_exists='replace')
     y_test.to_sql('y_expl_test', engine, schema='misc', if_exists='replace')
     y_sub.to_sql('y_expl_kagl', engine, schema='misc', if_exists='replace')
 
-
-    #create table
+    
+    #04.9 create table
     #Connect to DB
     conn = psycopg2.connect(
         "dbname='hm_crdt' user='{}' password='{}'".format(args.db_user, args.in_password)
@@ -114,6 +124,7 @@ if __name__ == '__main__':
 
     feature_list_q = ','.join(Features)
 
+    #04.10 combine datasets
     cur.execute(f"""create schema if not exists expl;
                 
                 
