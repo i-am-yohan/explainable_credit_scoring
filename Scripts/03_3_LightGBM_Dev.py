@@ -27,12 +27,14 @@ if __name__ == '__main__':
         help='The password for the user'
     )
 
+    #03_3.1 Parse the arguments
     args = parser.parse_args()
 
     print('Creating LightGBM model')
-
+    #03_3.2 Create SQL alchemy engine
     engine = create_engine('postgresql://postgres:{}@localhost:5432/hm_crdt'.format(args.in_password))
 
+    #03_3.3 Extract from DB
     Train_DF = pd.read_sql('''select * from abt.abt_train''', engine)#.sample(frac=1,random_state=198667)
     Test_Df = pd.read_sql('''select * from abt.abt_test''', engine)
     Sub_Df = pd.read_sql('''select * from abt.abt_kaggle_submission''', engine)
