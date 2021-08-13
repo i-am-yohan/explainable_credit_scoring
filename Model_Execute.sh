@@ -23,3 +23,5 @@ python3 Scripts/03_4_XGBoost_Dev.py $1 $2
 
 ~/.local/bin/kaggle competitions submit -c home-credit-default-risk -f Kaggle_Submissions/04_XGBoost.csv -m 04_XGBoost_Depl_Sub
 
+#Create tables for visualization
+python3 Scripts/04_Expl_Data_Create.py $1 $2
