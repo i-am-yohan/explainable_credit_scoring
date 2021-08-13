@@ -11,7 +11,7 @@ from sklearn.preprocessing import StandardScaler
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-        description = 'The Main NLP process'
+        description = 'Build the Random Forest'
     )
 
     parser.add_argument(
@@ -26,11 +26,14 @@ if __name__ == '__main__':
         help='The password for the user'
     )
 
+    #03_2.1 Parse the input arguments
     args = parser.parse_args()
 
     print('Creating Random Forest model')
+    #03_2.2 Database engine
     engine = create_engine('postgresql://postgres:{}@localhost:5432/hm_crdt'.format(args.in_password))
 
+    #03_2.3 Extract from DB
     Train_DF = pd.read_sql('''select * from abt.abt_train''', engine)#.sample(frac=1,random_state=198667)
     Test_Df = pd.read_sql('''select * from abt.abt_test''', engine)
     Sub_Df = pd.read_sql('''select * from abt.abt_kaggle_submission''', engine)
@@ -46,7 +49,7 @@ if __name__ == '__main__':
     X_test = Test_Df.drop('target', axis = 1)
     y_test = Test_Df['target']
 
-
+    #03_2.4 The evaluation function. Same in every function
     def Evaluation(Y_True, Y_Predict, Y_Predict_prob):
         Output = {}
         Output['Accuracy'] = sklearn.metrics.accuracy_score(Y_True, Y_Predict)
