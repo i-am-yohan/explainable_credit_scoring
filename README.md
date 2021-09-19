@@ -23,7 +23,7 @@ mkdir Kaggle_Submissions
 ```
 Given that the dataset used here is a kaggle dataset, in order to analyse the competition score, a dataset of predictions must be submitted to Kaggle in CSV format. The CSVs resulting from each model will be stored in the created sub-folder and will be submitted to Kaggle later in the process.
 
-### 2.2 Install requirements
+### 2.2 Install python requirements
 The following command installs all of the Python packages required for the project.
 ```
 pip3 install -r Scripts/Requirements.txt
@@ -43,6 +43,19 @@ plotly
 imblearn
 ```
 Note that the `psycopg2` package is used to access and run commands on the `postgres` DB. Before executing it is probably best that the use of Postgres is tested and set up beforehand. 
+
+### 2.3 Data preprocessing
+The data cleaning and feature engineering phase is executed as follows:
+```
+python3 Scripts/01_Data_Cleaning_and_Feature_Engineering.py $1 $2
+```
+The process where the train, test and kaggle submission datasets are sampled from the main table resulting from the previous command is executed as follows:
+```
+python3 Scripts/02_Sampling.py $1 $2
+```
+
+### 2.4 Model build phase
+
 
 
 ## Step 3: Extracting the counterfactuals.
