@@ -15,6 +15,9 @@ Execute the `Model_Execute.sh` to build the models and make the Kaggle submissio
 ```
 Ensure this is executed in the same folder as the Scripts sub-folder.
 
+The `Model_Execute.sh` has the folliowing commands:
+### 2.1 
+
 ## Step 3: Extracting the counterfactuals.
 The following inputs to the counterfactual search alogorithm are as follows:
 1. `sk_id_curr` - The observation of interest.
