@@ -16,7 +16,34 @@ Execute the `Model_Execute.sh` to build the models and make the Kaggle submissio
 Ensure this is executed in the same folder as the Scripts sub-folder.
 
 The `Model_Execute.sh` has the folliowing commands:
-### 2.1 
+### 2.1 Create directory for the Kaggle submissions
+The following command creates a director for the kaggle submissions. 
+```
+mkdir Kaggle_Submissions
+```
+Given that the dataset used here is a kaggle dataset, in order to analyse the competition score, a dataset of predictions must be submitted to Kaggle in CSV format. The CSVs resulting from each model will be stored in the created sub-folder and will be submitted to Kaggle later in the process.
+
+### 2.2 Install requirements
+The following command installs all of the Python packages required for the project.
+```
+pip3 install -r Scripts/Requirements.txt
+```
+This installs the python packages _only_. The required R packages are installed within the R script. The following python packages are installed:
+```
+psycopg2
+statsmodels
+SQLAlchemy
+sklearn
+pickles
+XGBoost
+LightGBM
+argparse
+progressbar
+plotly
+imblearn
+```
+
+
 
 ## Step 3: Extracting the counterfactuals.
 The following inputs to the counterfactual search alogorithm are as follows:
