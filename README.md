@@ -28,7 +28,7 @@ The following command installs all of the Python packages required for the proje
 ```
 pip3 install -r Scripts/Requirements.txt
 ```
-This installs the python packages _only_. The required R packages are installed within the R script. The following python packages are installed:
+This installs the python packages _only_. The required R packages are installed within the R script executed later in the process. The following python packages are installed:
 ```
 psycopg2
 statsmodels
@@ -42,7 +42,7 @@ progressbar
 plotly
 imblearn
 ```
-
+Note that the `psycopg2` package is used to access and run commands on the `postgres` DB. Before executing it is probably best that the use of Postgres is tested and set up beforehand. 
 
 
 ## Step 3: Extracting the counterfactuals.
