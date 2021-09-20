@@ -63,7 +63,7 @@ abt.abt_test
 ```
 
 ### 2.4 Model build
-This is the section where the models are trained, validated and evaluated. As previously stated the CSVs to be submitted to kaggle are created by each individual model script. The evaluation (with the exception of the kaggle submission) printed to the log when the model script is executed.
+This is the section where the models are trained, validated and evaluated. As previously stated the CSVs to be submitted to kaggle are created by each individual model script. The evaluation (with the exception of the kaggle submission) is printed to the log when the model script is executed.
 The build by each model is as follows:
 
 **Traditional credit scorecard**
