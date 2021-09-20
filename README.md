@@ -79,11 +79,31 @@ python3 Scripts/03_3_LightGBM_Dev.py $1 $2
 python3 Scripts/03_4_XGBoost_Dev.py $1 $2
 ```
 
+### 2.5 Submit the results to Kaggle
+In this phase the external results are submitted to Kaggle using the Kaggle API. Details on how to install the Kaggle API can be found using the following link: https://github.com/Kaggle/kaggle-api . 
+The commands are as follows:
+```
+~/.local/bin/kaggle competitions submit -c home-credit-default-risk -f Kaggle_Submissions/01_Scorecard.csv -m 01_Credit_Scorecard_Depl_Sub
+~/.local/bin/kaggle competitions submit -c home-credit-default-risk -f Kaggle_Submissions/02_Random_Forest.csv -m 02_Random_Forest_Depl_Sub
+~/.local/bin/kaggle competitions submit -c home-credit-default-risk -f Kaggle_Submissions/03_LightGBM.csv -m 03_LightGBM_Depl_Sub
+~/.local/bin/kaggle competitions submit -c home-credit-default-risk -f Kaggle_Submissions/04_XGBoost.csv -m 04_XGBoost_Depl_Sub
+```
+The AUC scores resulting from each submission are then checked by logging into Kaggle.
+
+### 2.6 Explanation phase data preparation
+The following command prepares data for the explanation phase:
+```
+python3 Scripts/04_Expl_Data_Create.py $1 $2
+```
+
+
 ## Step 3: Extracting the counterfactuals.
-The following inputs to the counterfactual search alogorithm are as follows:
+In this phase, the counterfactual search algorithm is deployed. The following inputs to the counterfactual search alogorithm are as follows:
 1. `sk_id_curr` - The observation of interest.
-2. `target_score` - The target counterfactual score
-3. `n_samples` - The number of samples to take at each iteration
+2. `target_score` - The target counterfactual score.
+3. `lower_bound` - The lower bound score to use when searching for counterfactuals.
+4. `upper_bound` - The upper bound score to use when searching for counterfactuals.
+5. `n_samples` - The number of samples to take at each iteration.
 
 The script is executed as follows:
 ```
