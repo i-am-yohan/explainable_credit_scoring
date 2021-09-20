@@ -15,7 +15,7 @@ Execute the `Model_Execute.sh` to build the models and make the Kaggle submissio
 ```
 Ensure this is executed in the same folder as the Scripts sub-folder.
 
-The `Model_Execute.sh` has the folliowing commands:
+The `Model_Execute.sh` has the following commands:
 ### 2.1 Create directory for the Kaggle submissions
 The following command creates a director for the kaggle submissions. 
 ```
