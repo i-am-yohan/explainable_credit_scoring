@@ -67,22 +67,26 @@ This is the section where the models are trained, validated and evaluated. As pr
 The build by each model is as follows:
 
 **Traditional credit scorecard**
+The credit scorecard model is trained, validated and evaluated using the following command:
 ```
 Rscript Scripts/03_1_Scorecard_Dev.R $1 $2
 ```
 This is done in R due to the requirement of the `scorecard` package. This is the only model built in R with the rest being built in Python.
 
 **Random forest**
+The Random Forest model is trained, validated and evaluated using the following command:
 ```
 python3 Scripts/03_2_RandomForest_Dev.py $1 $2
 ```
 
 **LightGBM**
+The LightGBM model is trained, validated and evaluated using the following command:
 ```
 python3 Scripts/03_3_LightGBM_Dev.py $1 $2
 ```
 
 **XGBoost**
+The XGBoost model is trained, validated and evaluated using the following command:
 ```
 python3 Scripts/03_4_XGBoost_Dev.py $1 $2
 ```
@@ -104,7 +108,7 @@ The following command prepares data for the explanation phase:
 ```
 python3 Scripts/04_Expl_Data_Create.py $1 $2
 ```
-This creates the table `expl.base_table`. This contains all observations from the train, test and kaggle submission tables. Each observation has the prediction made in probability, credit score and binary format. This is the main table that will be used in the explanation phase.
+This creates the table `expl.base_table`. This contains all observations from the train, test and kaggle submission tables. Each observation has the prediction made in predicted probability, predicted credit score and predicted binary outcome format. This is the main table that will be used in the explanation phase.
 
 ## Step 3: Extracting the counterfactuals.
 In this phase, the counterfactual search algorithm is deployed. The following inputs to the counterfactual search alogorithm are as follows:
