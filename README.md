@@ -104,7 +104,7 @@ The following command prepares data for the explanation phase:
 ```
 python3 Scripts/04_Expl_Data_Create.py $1 $2
 ```
-
+This creates the table `expl.base_table`. This contains all observations from the train, test and kaggle submission tables. Each observation has the prediction made in probability, credit score and binary format. This is the main table that will be used in the explanation phase.
 
 ## Step 3: Extracting the counterfactuals.
 In this phase, the counterfactual search algorithm is deployed. The following inputs to the counterfactual search alogorithm are as follows:
@@ -118,12 +118,12 @@ The script is executed as follows:
 ```
 python3 Scripts/05_Extract_CF.py <postgres id> <postgres password> <sk_id_curr> <target_score> <lower_bound> <upper_bound> <n_samples>
 ```
-This loads a table to the postgresDB called `plot_table`. This contains the counterfactual information.
+This loads a table to the postgresDB called `expl.plot_table`. This contains the counterfactual information.
 
 ## Step 4: Visualize the counterfactuals
 The `06_Visualization.py` script uses the `plot_table` to create graphs to help visualize the project. It is executed as follows:
 ```
 python3 Scripts/06_Visualization.py <postgres id> <postgres password> <Counterfactual ID>
 ```
-The `<Counterfactual ID>` parameter....
+The `<Counterfactual ID>` parameter is the counterfactual value which requires visualization. This corresponds to the `cf_id` column in the `expl.plot_table` table.
 These are output as plotly graphs sent to the web browser.
