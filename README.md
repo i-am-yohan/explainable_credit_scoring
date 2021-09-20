@@ -21,7 +21,7 @@ The following command creates a director for the kaggle submissions.
 ```
 mkdir Kaggle_Submissions
 ```
-Given that the dataset used here is a kaggle dataset, in order to analyse the competition score, a dataset of predictions must be submitted to Kaggle in CSV format. The CSVs resulting from each model will be stored in the created sub-folder and will be submitted to Kaggle later in the process.
+Given that the dataset used here is a kaggle dataset, in order to analyse the competition score, a dataset of predictions must be submitted to Kaggle in CSV format. The CSVs resulting from each model will be stored in the created sub-folder and will be submitted to Kaggle later in the process. The CSVs are created in each of the model build process.
 
 ### 2.2 Install python requirements
 The following command installs all of the Python packages required for the project.
@@ -54,9 +54,30 @@ The process where the train, test and kaggle submission datasets are sampled fro
 python3 Scripts/02_Sampling.py $1 $2
 ```
 
-### 2.4 Model build phase
+### 2.4 Model build
+This is the section where the models are trained, validated and evaluated. As previously stated the CSVs to be submitted to kaggle are created by each individual model script. The evaluation (with the exception of the kaggle submission) printed to the log when the model script is executed.
+The build by each model is as follows:
 
+**Traditional credit scorecard**
+```
+Rscript Scripts/03_1_Scorecard_Dev.R $1 $2
+```
+This is done in R due to the requirement of the `scorecard` package. This is the only model built in R with the rest being built in Python.
 
+**Random Forest**
+```
+python3 Scripts/03_2_RandomForest_Dev.py $1 $2
+```
+
+**LightGBM**
+```
+python3 Scripts/03_3_LightGBM_Dev.py $1 $2
+```
+
+**XGBoost**
+```
+python3 Scripts/03_4_XGBoost_Dev.py $1 $2
+```
 
 ## Step 3: Extracting the counterfactuals.
 The following inputs to the counterfactual search alogorithm are as follows:
