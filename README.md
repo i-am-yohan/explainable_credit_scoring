@@ -72,7 +72,7 @@ Rscript Scripts/03_1_Scorecard_Dev.R $1 $2
 ```
 This is done in R due to the requirement of the `scorecard` package. This is the only model built in R with the rest being built in Python.
 
-**Random Forest**
+**Random forest**
 ```
 python3 Scripts/03_2_RandomForest_Dev.py $1 $2
 ```
