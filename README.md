@@ -42,7 +42,7 @@ progressbar
 plotly
 imblearn
 ```
-Note that the `psycopg2` package is used to access and run commands on the `postgres` DB. Before executing it is probably best that the use of Postgres is tested and set up beforehand. 
+Note that the `psycopg2` package is used to access and run commands on the `postgres` DB. Before executing it is probably best that the use of Postgres is set up and  tested beforehand. 
 
 ### 2.3 Data preprocessing
 The data cleaning and feature engineering phase is executed as follows:
