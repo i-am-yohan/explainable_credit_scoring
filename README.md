@@ -78,6 +78,7 @@ python3 Scripts/03_3_LightGBM_Dev.py $1 $2
 ```
 python3 Scripts/03_4_XGBoost_Dev.py $1 $2
 ```
+This is the best performing model overall. It is because of this that the created XGBoost model is saved to a pickles file `Final_Model_XGBoost.pkl`. This will be used in the explanation phase.
 
 ### 2.5 Submit the results to Kaggle
 In this phase the external results are submitted to Kaggle using the Kaggle API. Details on how to install the Kaggle API can be found using the following link: https://github.com/Kaggle/kaggle-api . 
