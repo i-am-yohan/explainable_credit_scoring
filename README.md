@@ -67,30 +67,38 @@ This is the section where the models are trained, validated and evaluated. As pr
 The build by each model is as follows:
 
 **Traditional credit scorecard**
+
 The credit scorecard model is trained, validated and evaluated using the following command:
 ```
 Rscript Scripts/03_1_Scorecard_Dev.R $1 $2
 ```
 This is done in R due to the requirement of the `scorecard` package. This is the only model built in R with the rest being built in Python.
 
+
 **Random forest**
+
 The Random Forest model is trained, validated and evaluated using the following command:
 ```
 python3 Scripts/03_2_RandomForest_Dev.py $1 $2
 ```
 
+
 **LightGBM**
+
 The LightGBM model is trained, validated and evaluated using the following command:
 ```
 python3 Scripts/03_3_LightGBM_Dev.py $1 $2
 ```
 
+
 **XGBoost**
+
 The XGBoost model is trained, validated and evaluated using the following command:
 ```
 python3 Scripts/03_4_XGBoost_Dev.py $1 $2
 ```
 This is the best performing model overall. It is because of this that the created XGBoost model is saved to a pickles file `Final_Model_XGBoost.pkl`. This will be used in the explanation phase.
+
 
 ### 2.5 Submit the results to Kaggle
 In this phase the external results are submitted to Kaggle using the Kaggle API. Details on how to install the Kaggle API can be found using the following link: https://github.com/Kaggle/kaggle-api . 
