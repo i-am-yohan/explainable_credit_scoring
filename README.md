@@ -1,5 +1,5 @@
 # explainable_credit_scoring
-The code for the "Improving Credit Default Prediction with Explainable AI" masters project.
+The code for the _Improving Credit Default Prediction with Explainable AI_ masters project.
 
 Please see the following step-by-step process to run the project.
 
