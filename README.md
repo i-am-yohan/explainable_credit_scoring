@@ -21,7 +21,7 @@ The following command creates a directory for the kaggle submissions.
 ```
 mkdir Kaggle_Submissions
 ```
-Given that the dataset used here is a kaggle dataset, in order to analyse the competition score, a dataset of predictions must be submitted to Kaggle in CSV format. The CSVs resulting from each model will be stored in the created sub-folder and will be submitted to Kaggle later in the process. The CSVs are created in each of the model build process.
+Given that the dataset used here is a kaggle dataset, in order to analyse the competition score, a dataset of predictions must be submitted to Kaggle in CSV format. The CSVs resulting from each model will be stored in the created sub-folder and will be submitted to Kaggle later in the process. The CSVs are created in each of the model build processes.
 
 ### 2.2 Install python requirements
 The following command installs all of the Python packages required for the project.
