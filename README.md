@@ -137,5 +137,5 @@ The `06_Visualization.py` script uses the `plot_table` to create graphs to help 
 ```
 python3 Scripts/06_Visualization.py <postgres id> <postgres password> <Counterfactual ID>
 ```
-The `<Counterfactual ID>` parameter is the counterfactual value which requires visualization. This corresponds to the `cf_id` column in the `expl.plot_table` table.
+The `<Counterfactual ID>` parameter is the counterfactual value which requires visualization. The `<Counterfactual ID>` is a natural number that corresponds to the `cf_id` column in the `expl.plot_table` table.
 These are output as plotly graphs sent to the web browser.
