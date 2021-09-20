@@ -49,9 +49,17 @@ The data cleaning and feature engineering phase is executed as follows:
 ```
 python3 Scripts/01_Data_Cleaning_and_Feature_Engineering.py $1 $2
 ```
+This creates a table `abt.abt_full` with all of the observations with all of the engineered features.
+
 The process where the train, test and kaggle submission datasets are sampled from the main table resulting from the previous command is executed as follows:
 ```
 python3 Scripts/02_Sampling.py $1 $2
+```
+This creates three tables:
+```
+abt.abt_kaggle_submission
+abt.abt_train
+abt.abt_test
 ```
 
 ### 2.4 Model build
@@ -117,4 +125,5 @@ The `06_Visualization.py` script uses the `plot_table` to create graphs to help 
 ```
 python3 Scripts/06_Visualization.py <postgres id> <postgres password> <Counterfactual ID>
 ```
+The `<Counterfactual ID>` parameter....
 These are output as plotly graphs sent to the web browser.
