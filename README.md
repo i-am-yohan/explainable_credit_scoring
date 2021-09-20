@@ -17,7 +17,7 @@ Ensure this is executed in the same folder as the Scripts sub-folder.
 
 The `Model_Execute.sh` has the following commands:
 ### 2.1 Create directory for the Kaggle submissions
-The following command creates a director for the kaggle submissions. 
+The following command creates a directory for the kaggle submissions. 
 ```
 mkdir Kaggle_Submissions
 ```
