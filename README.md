@@ -165,7 +165,7 @@ The commands are as follows:
 ~/.local/bin/kaggle competitions submit -c home-credit-default-risk -f Kaggle_Submissions/03_LightGBM.csv -m 03_LightGBM_Depl_Sub
 ~/.local/bin/kaggle competitions submit -c home-credit-default-risk -f Kaggle_Submissions/04_XGBoost.csv -m 04_XGBoost_Depl_Sub
 ```
-The AUC scores resulting from each submission are then checked by logging into Kaggle.
+The AUC scores resulting from each submission are then checked by signing into Kaggle and checking the submissions.
 
 ### 2.6 Explanation phase data preparation
 The following command prepares data for the explanation phase:
