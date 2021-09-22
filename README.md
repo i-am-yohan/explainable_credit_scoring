@@ -73,6 +73,7 @@ The credit scorecard model is trained, validated and evaluated using the followi
 Rscript Scripts/03_1_Scorecard_Dev.R $1 $2
 ```
 This is done in R due to the requirement of the `scorecard` package. This is the only model built in R with the rest being built in Python.
+
 The model evaluation is printed to the log as follows:
 
 Train
@@ -137,7 +138,17 @@ The Random Forest model is trained, validated and evaluated using the following 
 ```
 python3 Scripts/03_2_RandomForest_Dev.py $1 $2
 ```
+The model evaluation is printed to the log as follows:
 
+Train
+```
+{'Accuracy': 0.6841662116580853, 'Precision': 0.16295647093193105, 'Recall': 0.7085423944109241, 'AUC': 0.7599507847734416}
+```
+Test
+```
+Evaluation for test set
+{'Accuracy': 0.6846657886607157, 'Precision': 0.16140235603322853, 'Recall': 0.6926485397784491, 'AUC': 0.7514528901717733}
+```
 
 **LightGBM**
 
@@ -145,7 +156,17 @@ The LightGBM model is trained, validated and evaluated using the following comma
 ```
 python3 Scripts/03_3_LightGBM_Dev.py $1 $2
 ```
+The model evaluation is printed to the log as follows:
 
+Train
+```
+{'Accuracy': 0.6982553184975021, 'Precision': 0.17241743805022425, 'Recall': 0.7251825976500477, 'AUC': 0.7829692807261011}
+```
+Test
+```
+Evaluation for test set
+{'Accuracy': 0.6960473472838723, 'Precision': 0.16932414856206945, 'Recall': 0.7079556898288016, 'AUC': 0.7738585286791403}
+```
 
 **XGBoost**
 
@@ -155,6 +176,16 @@ python3 Scripts/03_4_XGBoost_Dev.py $1 $2
 ```
 This is the best performing model overall. It is because of this that the created XGBoost model is saved to a pickles file `Final_Model_XGBoost.pkl`. This will be used in the explanation phase.
 
+The model evaluation is printed to the log as follows:
+
+Train
+```
+
+```
+Test
+```
+
+```
 
 ### 2.5 Submit the results to Kaggle
 In this phase the external results are submitted to Kaggle using the Kaggle API. Details on how to install the Kaggle API can be found using the following link: https://github.com/Kaggle/kaggle-api . 
