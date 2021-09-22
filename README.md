@@ -73,7 +73,61 @@ The credit scorecard model is trained, validated and evaluated using the followi
 Rscript Scripts/03_1_Scorecard_Dev.R $1 $2
 ```
 This is done in R due to the requirement of the `scorecard` package. This is the only model built in R with the rest being built in Python.
+The model evaluation is printed to the log as follows:
+**Train**
+```
+$Confusion_Matrix
+   
+     FALSE   TRUE
+  0 155949  69329
+  1   5892  13789
 
+$Accuracy
+[1] 0.6929241
+
+$Precision
+[1] 0.1658967
+
+$Recall
+[1] 0.700625
+
+$False_Positive_Rate
+[1] 0.3077486
+
+$AUC
+[1] 0.7621526
+
+$F1
+[1] 0.2682711
+
+NULL
+```
+**Test**
+```
+$Confusion_Matrix
+   
+    FALSE  TRUE
+  0 39070 17468
+  1  1531  3434
+
+$Accuracy
+[1] 0.6910882
+
+$Precision
+[1] 0.1642905
+
+$Recall
+[1] 0.6916415
+
+$False_Positive_Rate
+[1] 0.3089603
+
+$AUC
+[1] 0.7571097
+
+$F1
+[1] 0.265512
+```
 
 **Random forest**
 
