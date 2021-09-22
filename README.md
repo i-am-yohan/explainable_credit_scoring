@@ -180,11 +180,12 @@ The model evaluation is printed to the log as follows:
 
 Train
 ```
-
+{'Accuracy': 0.7163297902197819, 'Precision': 0.1834029907670793, 'Recall': 0.7329946014607812, 'AUC': 0.7999641421746178}
 ```
 Test
 ```
-
+Evaluation for test set
+{'Accuracy': 0.7140302099084598, 'Precision': 0.1786896095301125, 'Recall': 0.7069486404833837, 'AUC': 0.7812163228132317}
 ```
 
 ### 2.5 Submit the results to Kaggle
